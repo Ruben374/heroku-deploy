@@ -14,8 +14,17 @@ app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+const ClientRoute = require('./routes/clients')
 const CategoryRoute = require('./routes/category')
+const EstRoute = require('./routes/est')
+const ServicesRoute = require('./routes/services')
+
+
+app.use('/clients', ClientRoute)
 app.use('/category', CategoryRoute)
+app.use('/est', EstRoute)
+app.use('/services', ServicesRoute)
+
 
 app.use((req, res, next) => {
   const erro = new Error('Pagina não encontrada')
