@@ -7,6 +7,7 @@ const multer= require('../multer.js')
 
 router.post('/post',multer.single('file'),est.est)
 router.get('/:categoryId',est.get)
+router.get('/estsuser/:userId',est.getEstsUser)
 
 
 module.exports= router

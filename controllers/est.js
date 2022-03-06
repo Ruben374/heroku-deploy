@@ -25,12 +25,10 @@ exports.est = async (req, res, next) => {
     rua: 34
   }
 
-  const phone_number = ['948097837','222367948']
+  const phone_number = ['948097837', '222367948']
 
   try {
-    const name = req.body.name
-    const nif = req.body.nif
-    const categoryId = req.body.categoria
+    const { name, nif, categoryId,userId } = req.body
     const est = {
       categoryId,
       name,
@@ -39,7 +37,8 @@ exports.est = async (req, res, next) => {
       accession_date,
       phone_number,
       open_to,
-      address
+      address,
+      userId
     }
 
     const re = await Est.create(est)
@@ -64,5 +63,13 @@ exports.get = async (req, res, next) => {
     return res.status(500).send({ error: error })
   }
 }
-
-
+exports.getEstsUser = async (req, res, next) => {
+  const userId = req.params.userId
+  try {
+    const response = await Est.find({ userId })    
+    return res.status(201).send(response)
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).send({ error: error })
+  }
+}

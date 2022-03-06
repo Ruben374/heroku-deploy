@@ -31,6 +31,11 @@ const EstSchema = new mongoose.Schema({
   address: {
     type: Object,
     require: true
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    require: true
   }
 })
 const Est = mongoose.model('Est', EstSchema)

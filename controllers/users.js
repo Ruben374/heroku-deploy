@@ -2,15 +2,15 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const segredo = 'segredo'
 const mongoose = require('mongoose')
-const Client = require('../models/Clients')
+const User = require('../models/Users')
 
 
-exports.CreateClient = async (req, res, next) => {
+exports.CreateUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body
 
-    const clientExists = await Client.findOne({ email: email })
-    if (clientExists) {
+    const userExists = await User.findOne({ email: email })
+    if (userExists) {
       return res
         .status(422)
         .send({ status: 422, message: 'email ja cadastrado' })
@@ -19,12 +19,12 @@ exports.CreateClient = async (req, res, next) => {
     const salt = await bcrypt.genSalt(12)
     const passwordHash = await bcrypt.hash(password, salt)
 
-    const client = new Client({
+    const user = new User({
       name,
       email,
       password: passwordHash
     })
-    await client.save()
+    await user.save()
     return res.status(201).send({
       status: 201,
       message: 'usuario criado com sucesso'
@@ -38,23 +38,23 @@ exports.CreateClient = async (req, res, next) => {
 exports.Login = async (req, res, next) => {
   try {
     const { email, password } = req.body
-    const client = await Client.findOne({ email: email })
-    if (!client) {
+    const user = await User.findOne({ email: email })
+    if (!user) {
       return res.status(422).send({ message: 'usuario não encontrado' })
     }
-    const checkPassword = await bcrypt.compare(password, client.password)
+    const checkPassword = await bcrypt.compare(password, user.password)
     if (!checkPassword) {
       return res.status(401).send({ message: 'Falha na autenticação' })
     }
     const token = jwt.sign(
       {
-        id: client._id
+        id: user._id
       },
       segredo
     )
     const response = {
       token,
-      id: client._id
+      id: user._id
     }
     return res.status(200).send(response)
   } catch (error) {
@@ -67,10 +67,10 @@ exports.Refresh = async (req, res, next) => {
   try {
     const token = req.body.token
 
-    const verify = jwt.verify(token, segredo, (err, client) => {
+    const verify = jwt.verify(token, segredo, (err, user) => {
       console.log(err)
       if (err) return res.status(403).send({message:'token expirado'})
-       const id = client.id
+       const id = user.id
       const newtoken = jwt.sign(
         {
           id: id
