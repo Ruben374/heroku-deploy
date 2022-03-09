@@ -62,6 +62,13 @@ exports.verifyUser = async (req, res, next) => {
     })
     if (user) {
       //////////////
+      user.status = "Active";
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      })
       return res.status(201).send({ message: 'conta ativada' })
     } else {
       return res.status(404).send({ message: 'user not found' })
