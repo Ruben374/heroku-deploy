@@ -38,9 +38,7 @@ exports.CreateUser = async (req, res, next) => {
         res.status(500).send({ message: err })
         return
       }
-      res.send({
-        message: 'User was registered successfully! Please check your email'
-      })
+      res.status(201).send({ message: 'deu certo',status:201 })
 
       nodemailer.sendConfirmationEmail(
         user.username,
