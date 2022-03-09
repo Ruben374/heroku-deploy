@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt')
 const segredo = 'segredo'
 const mongoose = require('mongoose')
 const User = require('../models/Users')
-
+const nodemailer = require('../config/nodemailer')
 
 exports.CreateUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body
+    const { username, email, password } = req.body
 
     const userExists = await User.findOne({ email: email })
     if (userExists) {
@@ -19,16 +19,55 @@ exports.CreateUser = async (req, res, next) => {
     const salt = await bcrypt.genSalt(12)
     const passwordHash = await bcrypt.hash(password, salt)
 
+    const characters = '0123456789'
+    let confirmationCode = ''
+    for (let i = 0; i < 6; i++) {
+      confirmationCode +=
+        characters[Math.floor(Math.random() * characters.length)]
+    }
+
     const user = new User({
-      name,
+      username,
       email,
-      password: passwordHash
+      password: passwordHash,
+      confirmationCode
     })
-    await user.save()
-    return res.status(201).send({
-      status: 201,
-      message: 'usuario criado com sucesso'
+
+    user.save(err => {
+      if (err) {
+        res.status(500).send({ message: err })
+        return
+      }
+      res.send({
+        message: 'User was registered successfully! Please check your email'
+      })
+
+      nodemailer.sendConfirmationEmail(
+        user.username,
+        user.email,
+        user.confirmationCode
+      )
     })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).send({ error: error })
+  }
+}
+
+exports.verifyUser = async (req, res, next) => {
+  try {
+    const email = req.body.email
+    const confirmationCode = req.body.confirmationCode
+    const user = await User.findOne({
+      confirmationCode: confirmationCode,
+      email: email
+    })
+    if (user) {
+      //////////////
+      return res.status(201).send({ message: 'conta ativada' })
+    } else {
+      return res.status(404).send({ message: 'user not found' })
+    }
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ error: error })
@@ -69,8 +108,8 @@ exports.Refresh = async (req, res, next) => {
 
     const verify = jwt.verify(token, segredo, (err, user) => {
       console.log(err)
-      if (err) return res.status(403).send({message:'token expirado'})
-       const id = user.id
+      if (err) return res.status(403).send({ message: 'token expirado' })
+      const id = user.id
       const newtoken = jwt.sign(
         {
           id: id
@@ -83,7 +122,6 @@ exports.Refresh = async (req, res, next) => {
       }
       return res.status(200).send(response)
     })
- 
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ error: error })
