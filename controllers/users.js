@@ -21,7 +21,7 @@ exports.CreateUser = async (req, res, next) => {
 
     const characters = '0123456789'
     let confirmationCode = ''
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       confirmationCode +=
         characters[Math.floor(Math.random() * characters.length)]
     }
@@ -38,7 +38,7 @@ exports.CreateUser = async (req, res, next) => {
         res.status(500).send({ message: err })
         return
       }
-      res.status(201).send({ message: 'deu certo',status:201 })
+      res.status(201).send({ message: 'deu certo', status: 201 })
 
       nodemailer.sendConfirmationEmail(
         user.username,
@@ -62,11 +62,11 @@ exports.verifyUser = async (req, res, next) => {
     })
     if (user) {
       //////////////
-      user.status = "Active";
-      user.save((err) => {
+      user.status = 'Active'
+      user.save(err => {
         if (err) {
-          res.status(500).send({ message: err });
-          return;
+          res.status(500).send({ message: err })
+          return
         }
       })
       return res.status(201).send({ message: 'conta ativada' })
