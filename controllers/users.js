@@ -38,8 +38,7 @@ exports.CreateUser = async (req, res, next) => {
         res.status(500).send({ message: err })
         return
       }
-      res.status(201).send({ message: 'deu certo', status: 201 })
-
+      res.status(201).send(true)
       nodemailer.sendConfirmationEmail(
         user.username,
         user.email,
@@ -69,7 +68,8 @@ exports.verifyUser = async (req, res, next) => {
           return
         }
       })
-      return res.status(201).send({ message: 'conta ativada' })
+      const data = await User.findOne({ email: email })
+      return res.status(201).send({ data })
     } else {
       return res.status(404).send({ message: 'user not found' })
     }
