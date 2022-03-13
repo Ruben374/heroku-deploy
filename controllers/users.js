@@ -68,8 +68,17 @@ exports.verifyUser = async (req, res, next) => {
           return
         }
       })
-      const data = await User.findOne({ email: email })
-      return res.status(201).send({ data })
+      const token = jwt.sign(
+        {
+          id: user._id
+        },
+        segredo
+      )
+      const response = {
+        token,
+        id: user._id
+      }
+      return res.status(201).send({ response })
     } else {
       return res.status(404).send({ message: 'user not found' })
     }
