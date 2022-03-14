@@ -4,5 +4,6 @@ const services = require('../controllers/services')
 
 router.post('/post',services.post)
 router.get('/:id',services.get)
+router.get('/serv/:id',services.getService)
 
 module.exports= router

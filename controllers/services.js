@@ -21,7 +21,6 @@ exports.post = async (req, res, next) => {
 }
 exports.get = async (req, res, next) => {
  // const horarios = ['11:30', '13:00', '15:30', '17:00', '19:25']
-
   try{
     const services = await Services.find({estId:req.params.id})
     return res.status(201).send(services)
@@ -30,3 +29,13 @@ exports.get = async (req, res, next) => {
     return res.status(500).send({ error: message })
   }
 }
+exports.getService = async (req, res, next) => {
+  // const horarios = ['11:30', '13:00', '15:30', '17:00', '19:25']
+   try{
+     const services = await Services.findOne({_Id:req.params.id})
+     return res.status(201).send(services)
+   } catch (error) {
+       console.log(error.message)
+     return res.status(500).send({ error: message })
+   }
+ }
