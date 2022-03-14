@@ -19,14 +19,14 @@ const UserRoute = require('./routes/users')
 const CategoryRoute = require('./routes/category')
 const EstRoute = require('./routes/est')
 const ServicesRoute = require('./routes/services')
-const AppointmentsRoute = require('./routes/Appointments')
+//const AppointmentsRoute = require('./routes/Appointments')
 
 app.use('/clients', ClientRoute)
 app.use('/users', UserRoute)
 app.use('/category', CategoryRoute)
 app.use('/est', EstRoute)
 app.use('/services', ServicesRoute)
-app.use('/appointments', AppointmentsRoute)
+//app.use('/appointments', AppointmentsRoute)
 
 
 app.use((req, res, next) => {

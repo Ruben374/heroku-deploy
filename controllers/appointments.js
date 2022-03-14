@@ -1,9 +1,10 @@
-const mongoose = require('mongoose')
-const Appointments = require('../models/Appointments')
-const Services = require('../models/Services')
-const User = require('../models/Clients')
-const Est = require('../models/Est')
+//const mongoose = require('mongoose')
+//const Appointments = require('../models/Appointments')
+//const Services = require('../models/Services')
+//const User = require('../models/Clients')
+//const Est = require('../models/Est')
 
+/*
 exports.post = async (req, res, next) => {
   try {
     const { estid, clientid, serviceid, date, hour } = req.body
@@ -52,4 +53,8 @@ exports.get = async (req, res, next) => {
     console.log(error.message)
     return res.status(500).send({ error: error })
   }
+}
+*/
+exports.get = async (req, res, next) => {
+  return res.status(201).send({ mesage: 'ola mundo' })
 }
