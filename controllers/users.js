@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const User = require('../models/Users')
 const nodemailer = require('../config/nodemailer')
 
-exports.SignUpClient = async (req, res, next) => {
+exports.SignUpUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body
 
@@ -99,13 +99,13 @@ exports.Login = async (req, res, next) => {
     }
     const token = jwt.sign(
       {
-        id: client._id
+        id: user._id
       },
       segredo
     )
     const response = {
       token,
-      id: client._id
+      id: user._id
     }
     return res.status(200).send(response)
   } catch (error) {
@@ -117,10 +117,10 @@ exports.Login = async (req, res, next) => {
 exports.RefreshToken = async (req, res, next) => {
   try {
     const token = req.body.token
-    const verify = jwt.verify(token, segredo, (err, client) => {
+    const verify = jwt.verify(token, segredo, (err, user) => {
       console.log(err)
       if (err) return res.status(403).send({ message: 'token expirado' })
-      const id = client.id
+      const id = user.id
       const newtoken = jwt.sign(
         {
           id: id
