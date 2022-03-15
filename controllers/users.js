@@ -2,20 +2,19 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const segredo = 'segredo'
 const mongoose = require('mongoose')
-const Client = require('../models/Clients')
+const User = require('../models/Users')
 const nodemailer = require('../config/nodemailer')
 
 exports.SignUpClient = async (req, res, next) => {
   try {
     const { username, email, password } = req.body
 
-    const clientExists = await Client.findOne({ email: email })
-    if (clientExists) {
+    const userExists = await User.findOne({ email: email })
+    if (userExists) {
       return res
         .status(422)
         .send({ status: 422, message: 'email ja cadastrado' })
     }
-
     const salt = await bcrypt.genSalt(12)
     const passwordHash = await bcrypt.hash(password, salt)
     const characters = '0123456789'
@@ -25,23 +24,23 @@ exports.SignUpClient = async (req, res, next) => {
         characters[Math.floor(Math.random() * characters.length)]
     }
 
-    const client = new Client({
+    const user = new User({
       username,
       email,
       password: passwordHash,
       confirmationCode
     })
 
-    client.save(err => {
+    user.save(err => {
       if (err) {
         res.status(500).send({ message: err })
         return
       }
       res.status(201).send(true)
       nodemailer.sendConfirmationEmail(
-        client.username,
-        client.email,
-        client.confirmationCode
+        user.username,
+        user.email,
+        user.confirmationCode
       )
     })
   } catch (error) {
@@ -54,14 +53,14 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
   try {
     const email = req.body.email
     const confirmationCode = req.body.confirmationCode
-    const client = await Client.findOne({
+    const user = await User.findOne({
       confirmationCode: confirmationCode,
       email: email
     })
-    if (client) {
+    if (user) {
       //////////////
-      client.status = 'Active'
-      client.save(err => {
+      user.status = 'Active'
+      user.save(err => {
         if (err) {
           res.status(500).send({ message: err })
           return
@@ -69,17 +68,17 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
       })
       const token = jwt.sign(
         {
-          id: client._id
+          id: user._id
         },
         segredo
       )
       const response = {
         token,
-        id: client._id
+        id: user._id
       }
       return res.status(201).send({ response })
     } else {
-      return res.status(404).send({ message: 'client not found' })
+      return res.status(404).send({ message: 'user not found' })
     }
   } catch (error) {
     console.log(error.message)
@@ -90,11 +89,11 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
 exports.Login = async (req, res, next) => {
   try {
     const { email, password } = req.body
-    const client = await Client.findOne({ email: email })
-    if (!client) {
-      return res.status(422).send({ message: 'cliente não encontrado' })
+    const user = await User.findOne({ email: email })
+    if (!user) {
+      return res.status(422).send({ message: 'usuario não encontrado' })
     }
-    const checkPassword = await bcrypt.compare(password, client.password)
+    const checkPassword = await bcrypt.compare(password, user.password)
     if (!checkPassword) {
       return res.status(401).send({ message: 'Falha na autenticação' })
     }
