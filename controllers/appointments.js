@@ -53,7 +53,7 @@ exports.get = async (req, res, next) => {
     return res.status(500).send({ error: error })
   }
 }
-exports.getByServiceId= async ()=>{
+exports.getByServiceId= async (req,res,next)=>{
   try{
     const agendamentos = await Appointments.find({ serviceid: req.params.id })
     return res.status(201).send(agendamentos)
