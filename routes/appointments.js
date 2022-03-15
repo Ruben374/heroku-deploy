@@ -4,6 +4,6 @@ const appointments = require('../controllers/appointments')
 
 router.post('/post', appointments.post)
 router.get('/:id', appointments.get)
-router.get('/',appointments.get)
+router.get('/service/:id',appointments.getByServiceId)
 
 module.exports= router
