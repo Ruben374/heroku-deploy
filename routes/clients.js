@@ -1,12 +1,11 @@
 const express= require('express')
 const router= express.Router();
-const clients= require('../controllers/clients')
-const verify= require('../middleware/verify')
+const client= require('../controllers/clients')
 
-
-router.post('/createclient',clients.CreateClient)
-router.post('/login',clients.Login)
-router.post('/refresh',clients.Refresh)
+router.post('/signup',client.SignUpClient)
+router.post('/auth/login',client.Login)
+router.post('/auth/confirmcode', client.VerifyConfirmationCode)
+router.post('/refresh',client.RefreshToken)
 
 
 module.exports= router

@@ -1,8 +1,20 @@
-const mongoose= require('mongoose')
+const mongoose = require('mongoose')
 
-const Client= mongoose.model('Clients',{
-    name:String,
-    email:String,
-    password:String
+const clientSchema = new mongoose.Schema({
+  username: String,
+  email: String,
+  password: String,
+  status: {
+    type: String,
+    enum: ['Pending', 'Active'],
+    default: 'Pending'
+  },
+  confirmationCode: {
+    type: String,
+    unique: true
+  }
 })
-module.exports=Client
+
+const client = mongoose.model('clients', clientSchema)
+
+module.exports = client
