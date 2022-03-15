@@ -77,7 +77,7 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
         token,
         id: client._id
       }
-      return res.status(201).send({ response })
+      return res.status(201).send(response)
     } else {
       return res.status(404).send({ message: 'client not found' })
     }
