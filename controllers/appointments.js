@@ -62,3 +62,25 @@ exports.getByServiceId = async (req, res, next) => {
     return res.status(500).send({ error: error })
   }
 }
+
+exports.getByServiceIdAndDate = async (req, res, next) => {
+  try {
+    const serviceid = req.params.id
+    const date = req.params.date
+    console.log(date)
+  
+   const agendamentos = await Appointments.find({ serviceid: serviceid })
+    var vet = []
+    const filtro = agendamentos.filter(list => list.date == date)
+    console.log(filtro)
+    for (let i = 0; i < filtro.length; i++) {
+      //console.log(filtro[i].hour)
+      vet.push(filtro[i].hour)
+    }
+
+
+    return res.status(201).send({data:vet})
+  } catch (error) {
+    return res.status(500).send({ error: error })
+  }
+}
