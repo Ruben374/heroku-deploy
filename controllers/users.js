@@ -8,7 +8,9 @@ const nodemailer = require('../config/nodemailer')
 exports.SignUpUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body
-
+    if(!username || !password || !email){
+      return res.status(401).send({ message: 'expected field'})
+    }
     const userExists = await User.findOne({ email: email })
     if (userExists) {
       return res
@@ -93,6 +95,9 @@ exports.Login = async (req, res, next) => {
     if (!user) {
       return res.status(422).send({ message: 'usuario não encontrado' })
     }
+    if(user.status=='pending'){
+      return res.status(422).send({message:'Falha na autenticação'})
+    }
     const checkPassword = await bcrypt.compare(password, user.password)
     if (!checkPassword) {
       return res.status(401).send({ message: 'Falha na autenticação' })
@@ -103,11 +108,11 @@ exports.Login = async (req, res, next) => {
       },
       segredo
     )
-    const response = {
+    const data = {
       token,
-      id: user._id
+      data: user
     }
-    return res.status(200).send(response)
+    return res.status(200).send({data:data})
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ message: 'Falha na autenticação' })

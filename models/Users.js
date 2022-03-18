@@ -1,17 +1,26 @@
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
+  username: {
+    type: String,
+    require: true
+  },
+  email: {
+    type: String,
+    require: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    require: true
+  },
   status: {
     type: String,
     enum: ['Pending', 'Active'],
     default: 'Pending'
   },
   confirmationCode: {
-    type: String,
-    unique: true
+    type: String
   }
 })
 
