@@ -72,11 +72,11 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
         },
         segredo
       )
-      const response = {
+      const data = {
         token,
-        id: user._id
+        user: user
       }
-      return res.status(201).send({ response })
+      return res.status(201).send({ data:data })
     } else {
       return res.status(404).send({ message: 'user not found' })
     }
