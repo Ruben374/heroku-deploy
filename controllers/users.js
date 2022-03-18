@@ -95,7 +95,7 @@ exports.Login = async (req, res, next) => {
     if (!user) {
       return res.status(422).send({ message: 'usuario não encontrado' })
     }
-    if(user.status=='pending'){
+    if(user.status=='Pending'){
       return res.status(422).send({message:'Falha na autenticação'})
     }
     const checkPassword = await bcrypt.compare(password, user.password)
