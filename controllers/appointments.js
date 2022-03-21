@@ -36,7 +36,7 @@ exports.post = async (req, res, next) => {
     })
     const re = await Appointments.create(appointments)
 
-    return res.status(200).send({ message: 'agendamento criado' })
+    return res.status(200).send({ message: 'serviço agendando com sucesso' })
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ error: error })
