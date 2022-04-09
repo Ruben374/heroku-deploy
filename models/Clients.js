@@ -4,6 +4,10 @@ const clientSchema = new mongoose.Schema({
   username: String,
   email: String,
   password: String,
+  avatar: {
+    type:String,
+    default: ''
+  },
   status: {
     type: String,
     enum: ['Pending', 'Active'],
@@ -12,6 +16,11 @@ const clientSchema = new mongoose.Schema({
   confirmationCode: {
     type: String,
     unique: true
+  },
+  resetPasswordCode:{
+    type: String,
+    unique: true,
+    default:''
   }
 })
 

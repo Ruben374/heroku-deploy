@@ -10,30 +10,17 @@ exports.est = async (req, res, next) => {
   const newpath = img.split(['\\'])
   img = newpath[0] + '/' + newpath[1]
   /////////////////////////////////////////
+  //const open_to = {segunda: true,terça: false, quarta: true, quinta: false, sexta: true, sabado: true, domingo: false}
+  //const address = {bairro: 'camama',rua: 34}
 
-  const open_to = {
-    segunda: true,
-    terça: false,
-    quarta: true,
-    quinta: false,
-    sexta: true,
-    sabado: true,
-    domingo: false
-  }
-  const address = {
-    bairro: 'camama',
-    rua: 34
-  }
-
-  const phone_number = ['948097837', '222367948']
+  //const phone_number = ['948097837', '222367948']
 
   try {
-    const { name, nif, categoryId,userId } = req.body
+    const { name,nif,categoryId,userId,address,phone_number,open_to } = req.body
     const est = {
       categoryId,
       name,
       nif,
-      img,
       accession_date,
       phone_number,
       open_to,

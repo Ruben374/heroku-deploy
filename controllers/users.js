@@ -112,7 +112,7 @@ exports.Login = async (req, res, next) => {
       token,
       data: user
     }
-    return res.status(200).send({data:data})
+    return res.status(200).send(data)
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ message: 'Falha na autenticação' })
@@ -122,23 +122,26 @@ exports.Login = async (req, res, next) => {
 exports.RefreshToken = async (req, res, next) => {
   try {
     const token = req.body.token
+    let id = ''
     const verify = jwt.verify(token, segredo, (err, user) => {
-      console.log(err)
       if (err) return res.status(403).send({ message: 'token expirado' })
-      const id = user.id
-      const newtoken = jwt.sign(
-        {
-          id: id
-        },
-        segredo
-      )
-      const response = {
-        token: newtoken,
-        id: id
-      }
-      return res.status(200).send(response)
+      id = user.id
     })
-  } catch (error) {
+    // console.log(err)
+    const data = await User.findOne({ _id: id })
+    const newtoken = jwt.sign(
+      {
+        id: id
+      },
+      segredo
+    )
+    const response = {
+      token:newtoken,
+      dataUser: data
+    }
+   //console.log(response)
+    return res.status(200).send(response)
+  }catch (error) {
     console.log(error.message)
     return res.status(500).send({ error: error })
   }
