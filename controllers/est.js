@@ -6,9 +6,11 @@ const ObjectId = require('mongodb').ObjectId
 
 exports.est = async (req, res, next) => {
   /////////////////////////////////////////
+  if(req.file.path){
   let img = req.file.path
   const newpath = img.split(['\\'])
   img = newpath[0] + '/' + newpath[1]
+  }
   /////////////////////////////////////////
   //const open_to = {segunda: true,terça: false, quarta: true, quinta: false, sexta: true, sabado: true, domingo: false}
   //const address = {bairro: 'camama',rua: 34}
@@ -21,6 +23,7 @@ exports.est = async (req, res, next) => {
       categoryId,
       name,
       nif,
+      img,
       accession_date,
       phone_number,
       open_to,

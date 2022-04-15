@@ -200,10 +200,25 @@ exports.UpdateClient = async (req, res, next) => {
         clie.save()
         return res.status(200).send({ message: 'Success' })
         break
+      case 'Ps':
+       console.log(req.body.param)
+        let c = await Client.findOne({ email: req.body.id })
+        console.log(c)
+        if (!c) {
+          return res.status(422).send({ message: 'Error' })
+        }
+        const s = await bcrypt.genSalt(12)
+        const ph = await bcrypt.hash(req.body.param, s)
+        c.password = ph
+        c.save()
+        return res.status(200).send(true)
+        break
+
       default:
         return res.status(200).send({ message: 'ola mundo' })
     }
   } catch (error) {
+    console.log(error.message)
     return res.status(500).send({ error: error })
   }
 }
