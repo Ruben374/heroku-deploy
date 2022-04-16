@@ -6,16 +6,21 @@ const ObjectId = require('mongodb').ObjectId
 
 exports.est = async (req, res, next) => {
   /////////////////////////////////////////
-  if(req.file.path){
+ //console.log(req.body.name)
+
   let img = req.file.path
   const newpath = img.split(['\\'])
   img = newpath[0] + '/' + newpath[1]
-  }
+ console.log(img)
+
   /////////////////////////////////////////
   //const open_to = {segunda: true,terça: false, quarta: true, quinta: false, sexta: true, sabado: true, domingo: false}
   //const address = {bairro: 'camama',rua: 34}
 
   //const phone_number = ['948097837', '222367948']
+
+console.log(req.body)
+
 
   try {
     const { name,nif,categoryId,userId,address,phone_number,open_to } = req.body
@@ -38,7 +43,7 @@ exports.est = async (req, res, next) => {
       .send({ message: 'estabelecimento criado com sucesso' })
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send({ error: error })
+    return res.status(500).send({ error: error.message })
   }
 }
 
