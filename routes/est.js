@@ -8,6 +8,9 @@ const multer= require('../multer.js')
 router.post('/post',multer.single('file'),est.est)
 router.get('/:categoryId',est.get)
 router.get('/estsuser/:userId',est.getEstsUser)
+router.post('/rating',est.addStar)
+router.post('/getrate',est.getRate)
+router.patch('/uploadrate',est.ModifyRate)
 
 
 module.exports= router

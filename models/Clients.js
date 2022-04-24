@@ -5,7 +5,7 @@ const clientSchema = new mongoose.Schema({
   email: String,
   password: String,
   avatar: {
-    type:String,
+    type: String,
     default: ''
   },
   status: {
@@ -15,12 +15,11 @@ const clientSchema = new mongoose.Schema({
   },
   confirmationCode: {
     type: String,
-    unique: true
+    default: ''
   },
-  resetPasswordCode:{
+  resetPasswordCode: {
     type: String,
-    unique: true,
-    default:''
+    default: " "
   }
 })
 

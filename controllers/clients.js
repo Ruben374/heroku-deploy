@@ -10,6 +10,8 @@ exports.SignUpClient = async (req, res, next) => {
   try {
     const { username, email, password } = req.body
 
+
+    
     const clientExists = await Client.findOne({ email: email })
     if (clientExists) {
       return res
@@ -38,7 +40,7 @@ exports.SignUpClient = async (req, res, next) => {
         res.status(500).send({ message: err })
         return
       }
-      res.status(201).send(true)
+      res.status(201).send({message: 'Success',status:201})
       nodemailer.sendConfirmationEmail(
         client.username,
         client.email,
@@ -78,11 +80,12 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
         token,
         id: client._id,
         name: client.username,
-        avatar: client.avatar
+        avatar: client.avatar,
+        status:201
       }
       return res.status(201).send(response)
     } else {
-      return res.status(404).send({ message: 'client not found' })
+      return res.status(404).send({ message: 'client not found', status: 404 })
     }
   } catch (error) {
     console.log(error.message)
@@ -95,11 +98,11 @@ exports.Login = async (req, res, next) => {
     const { email, password } = req.body
     const client = await Client.findOne({ email: email })
     if (!client) {
-      return res.status(422).send({ message: 'cliente não encontrado' })
+      return res.status(422).send({ message: 'cliente não encontrado',status:404 })
     }
     const checkPassword = await bcrypt.compare(password, client.password)
     if (!checkPassword) {
-      return res.status(401).send({ message: 'Falha na autenticação' })
+      return res.status(401).send({ message: 'Falha na autenticação',status:401 })
     }
     const token = jwt.sign(
       {
@@ -117,7 +120,7 @@ exports.Login = async (req, res, next) => {
     return res.status(200).send(response)
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send({ message: 'Falha na autenticação' })
+    return res.status(500).send({ message: 'Falha na autenticação', status: 404})
   }
 }
 
@@ -126,7 +129,7 @@ exports.RefreshToken = async (req, res, next) => {
     const token = req.body.token
     let id = ''
     const verify = jwt.verify(token, segredo, (err, client) => {
-      if (err) return res.status(403).send({ message: 'token expirado' })
+      if (err) return res.status(403).send({ message: 'token expirado',status: 403 })
       id = client.id
     })
     // console.log(err)

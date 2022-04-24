@@ -25,12 +25,24 @@ const EstSchema = new mongoose.Schema({
     type: Array
   },
   open_to: {
-    type: Object,
+    type: Array,
     require: true
   },
   address: {
     type: Object,
     require: true
+  },
+  rating: {
+    type: Number,
+    default: 0
+  },
+  ratingPeople: {
+    type: Number,
+    default: 0
+  },
+  ratingmedia: {
+    type: Number,
+    default: 0
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
