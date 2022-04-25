@@ -19,7 +19,7 @@ const clientSchema = new mongoose.Schema({
   },
   resetPasswordCode: {
     type: String,
-    default: " "
+    default: ''
   }
 })
 

@@ -11,6 +11,7 @@ router.get('/estsuser/:userId',est.getEstsUser)
 router.post('/rating',est.addStar)
 router.post('/getrate',est.getRate)
 router.patch('/uploadrate',est.ModifyRate)
+router.get('/get/:id',est.getEst)
 
 
 module.exports= router

@@ -26,13 +26,11 @@ exports.est = async (req, res, next) => {
 
   /////////////////////////////////////////
   const open_to = [
-  
     { dia: 1, open: '08:00', close: '21:00' },
     { dia: 2, open: '08:00', close: '21:00' },
     { dia: 3, open: '08:00', close: '21:00' },
     { dia: 4, open: '08:00', close: '21:00' },
-    { dia: 5, open: '08:00', close: '21:00' },
-   
+    { dia: 5, open: '08:00', close: '21:00' }
   ]
   const address = { bairro: 'Benfica', rua: 2 }
   const phone_number = ['954678098', '943678951']
@@ -142,6 +140,15 @@ exports.ModifyRate = async (req, res, next) => {
     est.ratingmedia = media
     est.save()
     return res.status(200).send({ message: 'seja feliz' })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).send({ error: error })
+  }
+}
+exports.getEst = async (req, res, next) => {
+  try {
+    const est = await Est.findOne({ _id: req.params.id })
+    return res.status(200).send(est)
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ error: error })
