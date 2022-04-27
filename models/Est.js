@@ -21,16 +21,20 @@ const EstSchema = new mongoose.Schema({
     type: String,
     require: true
   },
-  phone_number: {
+  phones_number: {
     type: Array
   },
-  open_to: {
-    type: Array,
+  description: {
+    type: String,
     require: true
   },
   address: {
     type: Object,
     require: true
+  },
+  open_to: {
+    type: Array,
+    default: []
   },
   rating: {
     type: Number,

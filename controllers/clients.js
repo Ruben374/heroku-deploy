@@ -7,46 +7,71 @@ const nodemailer = require('../config/nodemailer')
 const remImg = require('../remImg.js')
 
 exports.SignUpClient = async (req, res, next) => {
+  const characters = '0123456789'
+  let confirmationCode = ''
   try {
     const { username, email, password } = req.body
-
-
-    
     const clientExists = await Client.findOne({ email: email })
-    if (clientExists) {
+    if (clientExists && clientExists.status == 'Active') {
       return res
         .status(422)
         .send({ status: 422, message: 'email ja cadastrado' })
     }
-
-    const salt = await bcrypt.genSalt(12)
-    const passwordHash = await bcrypt.hash(password, salt)
-    const characters = '0123456789'
-    let confirmationCode = ''
-    for (let i = 0; i < 4; i++) {
-      confirmationCode +=
-        characters[Math.floor(Math.random() * characters.length)]
-    }
-
-    const client = new Client({
-      username,
-      email,
-      password: passwordHash,
-      confirmationCode
-    })
-
-    client.save(err => {
-      if (err) {
-        res.status(500).send({ message: err })
-        return
+    if (clientExists && clientExists.status == 'Pending') {
+      const salt = await bcrypt.genSalt(12)
+      const passwordHash = await bcrypt.hash(password, salt)
+      for (let i = 0; i < 4; i++) {
+        confirmationCode +=
+          characters[Math.floor(Math.random() * characters.length)]
       }
-      res.status(201).send({message: 'Success',status:201})
-      nodemailer.sendConfirmationEmail(
-        client.username,
-        client.email,
-        client.confirmationCode
-      )
-    })
+      clientExists.password = passwordHash
+      clientExists.confirmationCode = confirmationCode
+      clientExists.username = username
+      //console.log(userExists)
+
+      clientExists.save(err => {
+        if (err) {
+          return res.status(500).send({ status: 500, message: err })
+        }
+        nodemailer.sendConfirmationEmail(
+          clientExists.username,
+          clientExists.email,
+          clientExists.confirmationCode
+        )
+        return res
+          .status(302)
+          .send({ status: 302, message: 'codigo reenviado com sucesso' })
+      })
+    }
+    if (!clientExists) {
+      const salt = await bcrypt.genSalt(12)
+      const passwordHash = await bcrypt.hash(password, salt)
+
+      for (let i = 0; i < 4; i++) {
+        confirmationCode +=
+          characters[Math.floor(Math.random() * characters.length)]
+      }
+
+      const client = new Client({
+        username,
+        email,
+        password: passwordHash,
+        confirmationCode
+      })
+
+      client.save(err => {
+        if (err) {
+          res.status(500).send({ message: err })
+          return
+        }
+        res.status(201).send({ message: 'Success', status: 201 })
+        nodemailer.sendConfirmationEmail(
+          client.username,
+          client.email,
+          client.confirmationCode
+        )
+      })
+    }
   } catch (error) {
     console.log(error.message)
     return res.status(500).send({ error: error })
@@ -81,7 +106,7 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
         id: client._id,
         name: client.username,
         avatar: client.avatar,
-        status:201
+        status: 201
       }
       return res.status(201).send(response)
     } else {
@@ -98,11 +123,15 @@ exports.Login = async (req, res, next) => {
     const { email, password } = req.body
     const client = await Client.findOne({ email: email })
     if (!client) {
-      return res.status(422).send({ message: 'cliente não encontrado',status:404 })
+      return res
+        .status(422)
+        .send({ message: 'cliente não encontrado', status: 404 })
     }
     const checkPassword = await bcrypt.compare(password, client.password)
     if (!checkPassword) {
-      return res.status(401).send({ message: 'Falha na autenticação',status:401 })
+      return res
+        .status(401)
+        .send({ message: 'Falha na autenticação', status: 401 })
     }
     const token = jwt.sign(
       {
@@ -120,7 +149,9 @@ exports.Login = async (req, res, next) => {
     return res.status(200).send(response)
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send({ message: 'Falha na autenticação', status: 404})
+    return res
+      .status(500)
+      .send({ message: 'Falha na autenticação', status: 404 })
   }
 }
 
@@ -129,7 +160,8 @@ exports.RefreshToken = async (req, res, next) => {
     const token = req.body.token
     let id = ''
     const verify = jwt.verify(token, segredo, (err, client) => {
-      if (err) return res.status(403).send({ message: 'token expirado',status: 403 })
+      if (err)
+        return res.status(403).send({ message: 'token expirado', status: 403 })
       id = client.id
     })
     // console.log(err)
@@ -201,24 +233,26 @@ exports.UpdateClient = async (req, res, next) => {
         let clie = await Client.findOne({ _id: req.body.id })
         clie.username = req.body.param
         clie.save()
-        return res.status(200).send({ message: 'Success' })
+        return res.status(200).send({ status: 200, message: 'Success' })
         break
       case 'Ps':
-       console.log(req.body.param)
+        console.log(req.body.param)
         let c = await Client.findOne({ email: req.body.id })
         console.log(c)
         if (!c) {
-          return res.status(422).send({ message: 'Error' })
+          return res.status(422).send({ status: 422, message: 'Error' })
         }
         const s = await bcrypt.genSalt(12)
         const ph = await bcrypt.hash(req.body.param, s)
         c.password = ph
         c.save()
-        return res.status(200).send(true)
+        return res
+          .status(200)
+          .send({ status: 200, message: 'Senha redefinida com sucesso' })
         break
 
       default:
-        return res.status(200).send({ message: 'ola mundo' })
+        return res.status(200).send({ status: 422, message: 'ola mundo' })
     }
   } catch (error) {
     console.log(error.message)
@@ -248,10 +282,12 @@ exports.resetPassword = async (req, res, next) => {
 
     client.save(err => {
       if (err) {
-        res.status(500).send({ message: err })
+        res.status(500).send({ status: 500, message: err })
         return
       }
-      res.status(201).send(true)
+      res
+        .status(200)
+        .send({ status: 200, message: 'Email enviado com sucesso' })
       nodemailer.sendConfirmationEmail(
         client.username,
         client.email,
@@ -261,7 +297,7 @@ exports.resetPassword = async (req, res, next) => {
     //return res.status(200).send({ message: 'ola mundo' })
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send({ error: error })
+    return res.status(500).send({ status: 500, error: error })
   }
 }
 exports.VerifyResetPasswordCode = async (req, res, next) => {
@@ -272,12 +308,12 @@ exports.VerifyResetPasswordCode = async (req, res, next) => {
       email: email
     })
     if (client) {
-      return res.status(201).send(true)
+      return res.status(200).send({ status: 200, message: 'codigo valido' })
     } else {
-      return res.status(422).send({ message: 'Codigo invalido' })
+      return res.status(422).send({ status: 422, message: 'Codigo invalido' })
     }
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send({ error: error })
+    return res.status(500).send({ status: 500, error: error })
   }
 }
