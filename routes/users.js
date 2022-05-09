@@ -1,9 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const user = require('../controllers/users')
-router.post('/signup', user.SignUpUser)
-router.post('/auth/login', user.Login)
-router.post('/auth/confirmcode', user.VerifyConfirmationCode)
-router.post('/auth/refresh', user.RefreshToken)
-
+router.post('/signUp', user.SignUpUser)
+router.post('/login', user.Login)
+router.post('/confirmCode', user.VerifyConfirmationCode)
+router.post('/validateToken', user.RefreshToken)
+router.post('/confirmCode/reset',user.confirmcodereset)
+router.get('/establishment/:id',user.get)
 module.exports = router
