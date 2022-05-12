@@ -27,7 +27,7 @@ exports.est = async (req, res, next) => {
   var username = "Ruben Mambo";
   var description =
     "somos um bom estabelecimento para voccê cortar o seu cabelo com calma qualidade e tranquilidade e temos preços baixos";
- */
+ */ 
   try {
     let phones_number = [];
     let img = req.file.path;
@@ -220,15 +220,18 @@ exports.ModifyRate = async (req, res, next) => {
     return res.status(500).send({ error: error });
   }
 };
+ 
 exports.getEst = async (req, res, next) => {
   try {
-    const est = await Est.findOne({ _id: req.params.id });
+    const est = await Est.findOne({ _id: req.body.id });
+    console.log(est)
     return res.status(200).send(est);
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
   }
 };
+
 exports.uploadImage = async (req, res, next) => {
   try {
     let img = req.file.path;

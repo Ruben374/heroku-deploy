@@ -11,7 +11,7 @@ router.get("/estsuser/:userId", est.getEstsUser);
 router.post("/rating", est.addStar);
 router.post("/getrate", est.getRate);
 router.patch("/uploadrate", est.ModifyRate);
-router.get("/get/:id", est.getEst);
+router.post("/get", est.getEst);
 router.put("/update/est/:estId", est.updateEst);
 router.post("/apaga", est.apaga);
 router.get("/", est.getAll);
