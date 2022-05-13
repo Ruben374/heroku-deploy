@@ -307,13 +307,12 @@ exports.updateEst = async (req, res, next) => {
   }
 };
 
-exports.apaga = async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   try {
-    let est = await Est.findOne({ _id: req.body.id });
-    console.log(est);
-    est.open_to.push({ dia: 3, open: "08:00", close: "21:00" });
-    est.save();
-    return res.status(200).send({ message: "ok" });
+    console.log(await Est.countDocuments({ _id: req.body.id }))
+    let est = await Est.deleteOne({ _id: req.body.id });
+    console.log(await Est.countDocuments({ _id: req.body.id }))
+    return res.status(200).send({ message: "Estabelecimento deletado com sucesso!" });
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });

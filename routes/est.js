@@ -13,7 +13,7 @@ router.post("/getrate", est.getRate);
 router.patch("/uploadrate", est.ModifyRate);
 router.post("/get", est.getEst);
 router.put("/update/est/:estId", est.updateEst);
-router.post("/apaga", est.apaga);
+router.post("/delete", est.delete);
 router.get("/", est.getAll);
 
 router.get("/toprates", est.estTopRates);
