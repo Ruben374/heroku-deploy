@@ -11,8 +11,7 @@ exports.postCategory = async (req, res, next) => {
     /////////////////////////////////////////
     const category = new Category({
       name,
-      image:path,
-     
+      image:path,     
     })
     await category.save()
     return res.status(201).send({ message: 'categoria criada com sucesso' })

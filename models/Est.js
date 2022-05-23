@@ -31,40 +31,28 @@ const EstSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      require: true,
+       require: true,
     },
     open_to: {
       type: Array,
       default: [],
     },
-    rating: {
-      type: Object,
-      default: {},
-    },
     user: {
       type: Object,
       require: true,
     },
-    services: {
-      type: Array,
-      default: [],
+    open: {
+      type: Boolean,
+      default: false,
     },
-    appointments: {
-      type: Array,
-      default: [],
+    status: {
+      type: String,
+      enum: ['Pending', 'Active'],
+      default: 'Pending'
     },
-
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    ratingmedia: {
-      type: Number,
-      default: 0,
-    },
-    open:{
-      type:Boolean,
-      default:false
+    ratingmedia:{
+      type:Number,
+      default:0
     }
   },
   {

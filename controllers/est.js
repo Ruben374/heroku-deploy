@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const { findOne } = require("../models/Est");
 const Est = require("../models/Est");
 const Rates = require("../models/Rates");
+const Services = require("../models/Services");
 //Provisorio
 
 const Ratting = async (estRating, estId, rate) => {
@@ -27,7 +29,7 @@ exports.est = async (req, res, next) => {
   var username = "Ruben Mambo";
   var description =
     "somos um bom estabelecimento para voccê cortar o seu cabelo com calma qualidade e tranquilidade e temos preços baixos";
- */ 
+ */
   try {
     let phones_number = [];
     let img = req.file.path;
@@ -78,7 +80,7 @@ exports.est = async (req, res, next) => {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const est = await Est.find().sort({ ratingmedia: -1 });
+    const est = await Est.find({ status: "Active" }).sort({ ratingmedia: -1 });
     console.log(typeof est);
     let rates = [];
     let maior = [];
@@ -109,7 +111,7 @@ exports.addOpen = async (req, res, next) => {
   try {
     const id = req.params.id;
     const open = {
-      dia: 0,
+      dia: 2,
       open: "08:30",
       close: "19:30",
     };
@@ -135,8 +137,11 @@ exports.get = async (req, res, next) => {
     const filtro = est.filter(
       (est) => est.category._id.toLowerCase() == lowerbusca
     );
-    console.log(filtro);
-    return res.status(201).send(filtro);
+    //console.log(filtro);
+    const filtro2 = filtro.filter(
+      (est) => est.status == "Active"
+    );
+    return res.status(200).send(filtro2);
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
@@ -158,26 +163,33 @@ exports.getEstsUser = async (req, res, next) => {
 };
 exports.addStar = async (req, res, next) => {
   try {
-    //let est = await Est.find({ _id: req.body.id})
-    const { clientId, estId, rate } = req.body;
 
-    const rates = new Rates({
-      clientId,
-      estId,
-      rate,
-    });
-    rates.save((err) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-    });
-    console.log(req.body);
-    const estRate = await Est.findOne({ _id: estId });
-    console.log(estRate);
-
-    Ratting(estRate.rating, estId, rate);
-    return res.status(200).send({ message: "bm vindo" });
+    const { client, est, rate, comment } = req.body;
+    const estExists = await Est.findOne({ _id: est.id })
+    if (!estExists) {
+      return res.status(404).send({ message: "not found" })
+    }
+    const rat = {
+      client, est, rate, comment
+    }
+    await Rates.create(rat)
+    const r = await Rates.find()
+    const lowerbusca = est.id.toLowerCase()
+    const filtro = r.filter(
+      (r) => r.est.id.toLowerCase() == lowerbusca
+    );
+    let soma = 0
+    console.log(filtro.length)
+    console.log(filtro)
+    for (let i = 0; i < filtro.length; i++) {
+      soma += filtro[i].rate
+    }
+    console.log(soma)
+    const ratingmedia = soma / filtro.length
+    console.log(ratingmedia)
+    estExists.ratingmedia = ratingmedia
+    await Est.updateOne({ _id: est.id }, estExists)
+    return res.status(200).send(true);
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
@@ -186,13 +198,28 @@ exports.addStar = async (req, res, next) => {
 
 exports.getRate = async (req, res, next) => {
   try {
-    const { estId, clientId } = req.body;
-    const rate = await Rates.findOne({ clientId, estId });
-    if (!rate) {
-      return res.status(404).send({ message: "not fount", status: 404 });
+    const { email, id } = req.body;
+    const r = await Rates.find()
+    const lowerbusca = id.toLowerCase()
+    const filtro = r.filter(
+      (r) => r.est.id.toLowerCase() == lowerbusca
+    );
+    const bu = email.toLowerCase()
+    const filtro2 = filtro.filter(
+      (r) => r.client.email.toLowerCase() == bu
+    );
+
+    if (filtro2.length > 0) {
+      const toprate = filtro[0]
+      if (filtro[1]) {
+        toprate.push(filtro[1])
+      }
+      console.log(toprate)
+      return res.status(200).send({ rating: filtro2[0], status: 200, toprate: toprate });
     }
-    console.log(rate);
-    return res.status(200).send({ rating: rate.rate, status: 200 });
+    else {
+      return res.status(404).send({ status: 404 });
+    }
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
@@ -200,32 +227,81 @@ exports.getRate = async (req, res, next) => {
 };
 exports.ModifyRate = async (req, res, next) => {
   try {
-    const { estId, clientId, rate } = req.body;
-    let est = await Est.findOne({ _id: estId });
-    let rat = await Rates.findOne({ estId, clientId });
-    const h = rat.rate;
-    rat.rate = rate;
-    rat.save();
-    const peopleRate = await Rates.find({ estId }).count();
-    let soma = est.rating - h;
-    console.log(soma);
-    soma = soma + rate;
-    const media = soma / peopleRate;
-    est.rating = soma;
-    est.ratingmedia = media;
-    est.save();
+    const { estId, rateId, rate, com } = req.body;
+
+    const estExists = await Est.findOne({ _id: estId })
+    if (!estExists) {
+      return res.status(404).send({ message: "not found" })
+    }
+    const rat = await Rates.findOne({ _di: rateId })
+    rat.rate = rate
+    rat.comment = com
+    console.log(rateId)
+    await Rates.updateOne({ _id: rateId }, rat)
+
+    const r = await Rates.find()
+    const lowerbusca = estId.toLowerCase()
+    const filtro = r.filter(
+      (r) => r.est.id.toLowerCase() == lowerbusca
+    );
+    let soma = 0
+    for (let i = 0; i < filtro.length; i++) {
+      soma += filtro[i].rate
+    }
+    console.log(soma)
+    const ratingmedia = soma / filtro.length
+    console.log(ratingmedia)
     return res.status(200).send({ message: "seja feliz" });
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
   }
 };
- 
+
 exports.getEst = async (req, res, next) => {
   try {
     const est = await Est.findOne({ _id: req.body.id });
-    console.log(est)
+    console.log(est);
     return res.status(200).send(est);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send({ error: error });
+  }
+};
+exports.getEstMobile = async (req, res, next) => {
+  try {
+    const estid = req.params.id;
+    //console.group(estid)
+    const est = await Est.findOne({ _id: estid });
+    const services = await Services.find();
+    const lowerbusca = estid.toLowerCase();
+    const filtro = services.filter(
+      (serv) => serv.est.id.toLowerCase() == lowerbusca
+    );
+    const rates = await Rates.find();
+    const r = rates.filter(
+      (ra) => ra.est.id.toLowerCase() == lowerbusca
+    );
+    const h = []
+    const g = []
+    if (r.length > 0) {
+      h.push(r[0])
+      if (r.length > 1) {
+        h.push(r[1])
+      }
+    }
+    if (filtro.length > 0) {
+      console.log("sim")
+      g.push(filtro[0])
+      if (filtro.length > 1) {
+        g.push(filtro[1])
+        if (filtro.length > 2) {
+          g.push(filtro[2])
+        }
+      }
+
+    }
+    return res.status(200).send({ est: est, services: filtro, status: 200, rates: r, toprate: h, topserv: g });
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
@@ -309,10 +385,12 @@ exports.updateEst = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-    console.log(await Est.countDocuments({ _id: req.body.id }))
+    console.log(await Est.countDocuments({ _id: req.body.id }));
     let est = await Est.deleteOne({ _id: req.body.id });
-    console.log(await Est.countDocuments({ _id: req.body.id }))
-    return res.status(200).send({ message: "Estabelecimento deletado com sucesso!" });
+    console.log(await Est.countDocuments({ _id: req.body.id }));
+    return res
+      .status(200)
+      .send({ message: "Estabelecimento deletado com sucesso!" });
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });

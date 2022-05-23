@@ -20,8 +20,12 @@ const clientSchema = new mongoose.Schema({
   resetPasswordCode: {
     type: String,
     default: ''
-  }
-})
+  },
+  favorites: {
+    type: Array,
+    default: []
+  },
+}, { timestamps: true })
 
 const client = mongoose.model('clients', clientSchema)
 

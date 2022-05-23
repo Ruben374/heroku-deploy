@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const segredo = "segredo";
 const mongoose = require("mongoose");
 const Client = require("../models/Clients");
+const Rates = require("../models/Rates");
 const nodemailer = require("../config/nodemailer");
 const remImg = require("../remImg.js");
 
@@ -106,6 +107,7 @@ exports.VerifyConfirmationCode = async (req, res, next) => {
         email: client.email,
         name: client.username,
         avatar: client.avatar,
+        favorites: client.favorites,
         status: 201,
       };
       return res.status(201).send(response);
@@ -144,6 +146,7 @@ exports.Login = async (req, res, next) => {
       email: client.email,
       name: client.username,
       avatar: client.avatar,
+      favorites: client.favorites,
       status: 200,
     };
 
@@ -182,7 +185,8 @@ exports.RefreshToken = async (req, res, next) => {
       email: data.email,
       name: data.username,
       avatar: data.avatar,
-      status:200
+      favorites: data.favorites,
+      status: 200
     };
     console.log(response);
     return res.status(200).send(response);
@@ -201,6 +205,15 @@ exports.UploadImage = async (req, res, next) => {
     console.log(img);
     //////////////////////////////////////////
     const client = await Client.findOne({ email: req.body.email });
+    const rates = await Rates.find();
+    const lowerbusca = req.body.email.toLowerCase();
+    const filtro = rates.filter(
+      (r) => r.client.email.toLowerCase() == lowerbusca
+    );
+    for (let i = 0; i < filtro.length; ++i) {
+      filtro[i].client.avatar = img
+      await Rates.updateOne({ _id: filtro[i]._id }, filtro[i]);
+    }
     remImg(client.avatar);
     client.avatar = img;
     client.save((err) => {
@@ -320,6 +333,45 @@ exports.VerifyResetPasswordCode = async (req, res, next) => {
     } else {
       return res.status(422).send({ status: 422, message: "Codigo invalido" });
     }
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send({ status: 500, error: error });
+  }
+};
+
+
+exports.addFavorite = async (req, res, next) => {
+  try {
+    const email = req.body.email
+    const fav = req.body.fav
+    const client = await Client.findOne({ email: email })
+    if (!client) {
+      return res.status(404).send({ message: "not fount", status: 404 })
+    }
+    client.favorites.push(fav)
+    await Client.updateOne({ email: email }, client)
+    return res.status(201).send({ status: 201 })
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send({ status: 500, error: error });
+  }
+};
+exports.removeFavorite = async (req, res, next) => {
+  try {
+    const email = req.body.email
+    const id = req.body.id
+    const client = await Client.findOne({ email: email })
+    if (!client) {
+      return res.status(404).send({ message: "not fount", status: 404 })
+    }
+
+    const lowerbusca = id.toLowerCase();
+    const filtro = client.favorites.filter(
+      (c) => c._id.toLowerCase() != lowerbusca
+    );
+    client.favorites = filtro
+    await Client.updateOne({ email: email }, client)
+    return res.status(201).send({ status: 200 })
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ status: 500, error: error });

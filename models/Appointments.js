@@ -10,10 +10,6 @@ const AppointmentsSchema = new mongoose.Schema(
       type: Object,
       require: true,
     },
-    est: {
-      type: Object,
-      require: true,
-    },
     date: {
       type: Date,
       require: true,

@@ -21,6 +21,7 @@ const EstRoute = require('./routes/est')
 const ServicesRoute = require('./routes/services')
 const AppointmentsRoute = require('./routes/appointments')
 
+
 app.use('/clients', ClientRoute)
 app.use('/users', UserRoute)
 app.use('/category', CategoryRoute)
