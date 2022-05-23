@@ -132,7 +132,6 @@ exports.get = async (req, res, next) => {
   const categoryId = req.params.categoryId;
   try {
     const est = await Est.find();
-    console.log(est);
     const lowerbusca = categoryId.toLowerCase();
     const filtro = est.filter(
       (est) => est.category._id.toLowerCase() == lowerbusca
@@ -385,12 +384,17 @@ exports.updateEst = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
+<<<<<<< HEAD
     console.log(await Est.countDocuments({ _id: req.body.id }));
     let est = await Est.deleteOne({ _id: req.body.id });
     console.log(await Est.countDocuments({ _id: req.body.id }));
     return res
       .status(200)
       .send({ message: "Estabelecimento deletado com sucesso!" });
+=======
+    await Est.deleteOne({ _id: req.body.id });
+    return res.status(200).send({ message: "Estabelecimento deletado com sucesso!" });
+>>>>>>> b0de3440b2fc9152c257acf1b3ac6201d081a152
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
