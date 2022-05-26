@@ -350,7 +350,7 @@ exports.addFavorite = async (req, res, next) => {
     }
     client.favorites.push(fav)
     await Client.updateOne({ email: email }, client)
-    return res.status(201).send({ status: 201 })
+    return res.status(201).send({ status: 201, favorites: client.favorites })
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ status: 500, error: error });
@@ -371,7 +371,7 @@ exports.removeFavorite = async (req, res, next) => {
     );
     client.favorites = filtro
     await Client.updateOne({ email: email }, client)
-    return res.status(201).send({ status: 200 })
+    return res.status(201).send({ status: 200,favorites: client.favorites })
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ status: 500, error: error });

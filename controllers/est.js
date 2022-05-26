@@ -299,7 +299,6 @@ exports.getEstMobile = async (req, res, next) => {
           g.push(filtro[2])
         }
       }
-
     }
     return res.status(200).send({ est: est, services: filtro, status: 200, rates: r, toprate: h, topserv: g });
   } catch (error) {
