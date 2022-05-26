@@ -37,26 +37,9 @@ const EstSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    rating: {
-      type: Object,
-      default: {},
-    },
     user: {
       type: Object,
       require: true,
-    },
-    services: {
-      type: Array,
-      default: [],
-    },
-    appointments: {
-      type: Array,
-      default: [],
-    },
-
-    rating: {
-      type: Number,
-      default: 0,
     },
     ratingmedia: {
       type: Number,
@@ -65,6 +48,11 @@ const EstSchema = new mongoose.Schema(
     open:{
       type:Boolean,
       default:false
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Active"],
+      default: "Pending",
     }
   },
   {

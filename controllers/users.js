@@ -155,7 +155,7 @@ exports.confirmcodereset = async (req, res, next) => {
 exports.resertPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
-    console.log(email, newPassword)
+    console.log(email, newPassword);
     if (!email || !newPassword)
       res.status(500).send({ message: "Falta campos" });
     else {
@@ -165,7 +165,7 @@ exports.resertPassword = async (req, res) => {
         { email },
         { password: passwordHash }
       );
-      console.log(user)
+      console.log(user);
       if (user) {
         const token = jwt.sign(
           {
