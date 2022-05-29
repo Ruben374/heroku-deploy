@@ -111,7 +111,7 @@ exports.addOpen = async (req, res, next) => {
   try {
     const id = req.params.id;
     const open = {
-      dia: 2,
+      dia: 6,
       open: "08:30",
       close: "19:30",
     };
@@ -214,7 +214,7 @@ exports.getRate = async (req, res, next) => {
       if (filtro[1]) {
         toprate.push(filtro[1])
       }
-      console.log(toprate)
+      //console.log(toprate)
       return res.status(200).send({ rating: filtro2[0], status: 200, toprate: toprate });
     }
     else {
@@ -228,17 +228,15 @@ exports.getRate = async (req, res, next) => {
 exports.ModifyRate = async (req, res, next) => {
   try {
     const { estId, rateId, rate, com } = req.body;
-
     const estExists = await Est.findOne({ _id: estId })
     if (!estExists) {
       return res.status(404).send({ message: "not found" })
     }
-    const rat = await Rates.findOne({ _di: rateId })
+    const rat = await Rates.findOne({ _id: rateId })
     rat.rate = rate
     rat.comment = com
-    console.log(rateId)
+    //console.log(rateId)
     await Rates.updateOne({ _id: rateId }, rat)
-
     const r = await Rates.find()
     const lowerbusca = estId.toLowerCase()
     const filtro = r.filter(
@@ -248,9 +246,11 @@ exports.ModifyRate = async (req, res, next) => {
     for (let i = 0; i < filtro.length; i++) {
       soma += filtro[i].rate
     }
-    console.log(soma)
+    // console.log(soma)
     const ratingmedia = soma / filtro.length
-    console.log(ratingmedia)
+    // console.log(ratingmedia)
+    estExists.ratingmedia = ratingmedia
+    await Est.updateOne({ _id: estId }, estExists)
     return res.status(200).send({ message: "seja feliz" });
   } catch (error) {
     console.log(error.message);

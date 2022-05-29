@@ -129,6 +129,11 @@ exports.Login = async (req, res, next) => {
         .status(422)
         .send({ message: "cliente não encontrado", status: 404 });
     }
+    if (client.status == "Pending") {
+      return res
+        .status(422)
+        .send({ message: "cliente não encontrado", status: 404 });
+    }
     const checkPassword = await bcrypt.compare(password, client.password);
     if (!checkPassword) {
       return res
@@ -371,7 +376,7 @@ exports.removeFavorite = async (req, res, next) => {
     );
     client.favorites = filtro
     await Client.updateOne({ email: email }, client)
-    return res.status(201).send({ status: 200,favorites: client.favorites })
+    return res.status(201).send({ status: 200, favorites: client.favorites })
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ status: 500, error: error });
