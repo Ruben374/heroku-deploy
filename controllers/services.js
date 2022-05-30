@@ -88,10 +88,11 @@ exports.DeleteService = async (req, res, next) => {
 
 exports.getAppointments = async (req, res) => {
   try {
-    const appointments = await Appointments.find({
+    const appointments = await Appointments.findOne({
       "service.id": req.params.id,
     });
-    if (appointments.length > 0) return res.status(200).send(appointments);
+    console.log(appointments);
+    if (appointments) return res.status(200).send(appointments);
     return res.status(404).send({ message: "Sem agendamentos" });
   } catch (error) {
     console.log(error);
