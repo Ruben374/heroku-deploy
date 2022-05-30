@@ -32,6 +32,7 @@ exports.est = async (req, res) => {
     };
 
     let img = req.file;
+    console.log(img);
     if (img) {
       img = img.path;
       const newpath = img.split(["\\"]);
@@ -51,20 +52,6 @@ exports.est = async (req, res) => {
       console.log(est);
       return res.status(201).send(est).end();
     }
-
-    const est = new Est({
-      name,
-      img: img,
-      nif: nif,
-      phones_number: phones_number,
-      description: description,
-      address: address,
-      category: category,
-      user: user,
-    });
-    await Est.create(est);
-    console.log(est);
-    return res.status(201).send(est).end();
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error.message });
@@ -141,6 +128,7 @@ exports.get = async (req, res, next) => {
 exports.openClose = async (req, res, next) => {
   try {
     const open = req.body.open;
+    console.log(open)
     const est = await Est.findOneAndUpdate(
       { _id: req.body.id },
       { open: !open }
@@ -152,7 +140,7 @@ exports.openClose = async (req, res, next) => {
           ? "Estabelecimento fechado com sucesso"
           : "Estabelecimento aberto",
         text: !open,
-      });
+      }); 
     return res.status(500).send({ message: "Erro ao atualizar" });
   } catch (error) {
     console.log(error.message);
@@ -161,11 +149,11 @@ exports.openClose = async (req, res, next) => {
 };
 
 exports.getEstsUser = async (req, res, next) => {
-  const userId = req.params.userId;
-  console.log(userId);
+  const estId = req.params.estId;
+  console.log(estId);
   try {
     const est = await Est.find();
-    const lowerbusca = userId.toLowerCase();
+    const lowerbusca = estId.toLowerCase();
     const filtro = est.filter(
       (est) => est.user._id.toLowerCase() == lowerbusca
     );
@@ -244,7 +232,7 @@ exports.ModifyRate = async (req, res, next) => {
 
 exports.getEst = async (req, res, next) => {
   try {
-    const est = await Est.findOne({ _id: req.body.id });
+    const est = await Est.findOne({ _id: req.params.estId });
     return res.status(200).send(est);
   } catch (error) {
     console.log(error.message);
@@ -252,26 +240,36 @@ exports.getEst = async (req, res, next) => {
   }
 };
 
+exports.test = async (req, res, next) => {
+  console.log("Teste");
+  return res.status(500).send({ message: "Olá mundo" });
+};
+
+exports.testAll = async (req, res) => {
+  console.log("Olá mundo");
+};
+
 exports.uploadImage = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    let img = req.file;
-    console.log(img);
-    if (img) {
-      img = img.path;
+    console.log(req.file);
+    if (req.file) {
+      let img = req.file.path;
       const newpath = img.split(["\\"]);
       img = newpath[0] + "/" + newpath[1];
-      console.log(img);
-
-      await Est.findOneAndUpdate({ _id: id }, { img: img });
-      return res.status(201).send({ message: "Imagem atualizada com sucesso" });
+      const alter = await Est.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          img: img,
+        }
+      );
+      return res.status(200).send({ message: "Feito" });
     }
-
+    
     return res.status(404).send({ message: "Imagem não encontrada" });
     /* return res.status(404).send({ message: "Erro ao atualizar" }); */
   } catch (error) {
     console.log(error.message);
-    return res.status(500).send({ error: error });
+    return res.status(500).send({ "Erro: ": error });
   }
 };
 
@@ -319,6 +317,7 @@ exports.updateEst = async (req, res, next) => {
     const [newOpen, setNewOpen] = useState(est.open_to);
 
     setNewOpen([...newOpen(), open_to]);
+    console.log(imagesCount)
     if (imagesCount > 0) {
       for (let i = 0; i < imagesCount; i++) {
         let img = req.files[i].path;
@@ -365,7 +364,7 @@ exports.updateEst = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-    await Est.deleteOne({ _id: req.body.id });
+    await Est.deleteOne({ _id: req.params.estId });
     return res
       .status(200)
       .send({ message: "Estabelecimento deletado com sucesso!" });

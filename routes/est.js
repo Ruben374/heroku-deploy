@@ -4,17 +4,19 @@ const est = require("../controllers/est");
 const verify = require("../middleware/verify");
 const multer = require("../multer.js");
  
-router.post("/post", multer.array("file"), est.est);
+router.post("/post", multer.single("file"), est.est);
 router.post("/uploadimage/:id", multer.single("file"), est.uploadImage);
 router.get("/:categoryId", est.get);
-router.get("/estsuser/:userId", est.getEstsUser);
+router.get("/estsuser/:estId", est.getEstsUser);
 router.post("/rating", est.addStar);
 router.post("/getrate", est.getRate);
 router.patch("/uploadrate", est.ModifyRate);
-router.post("/get", est.getEst);
+router.get("/getEst/:estId", est.getEst);
+router.get("/testeAll", est.testAll);
+router.post("/teste", est.test);
 router.post("/openClose", est.openClose);
 router.post("/update/:estId", multer.array("files"), est.updateEst);
-router.post("/delete", est.delete);
+router.get("/delete/:estId", est.delete);
 router.get("/", est.getAll);
 
 router.get("/toprates", est.estTopRates);

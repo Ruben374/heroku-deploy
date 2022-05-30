@@ -248,6 +248,7 @@ exports.RefreshToken = async (req, res, next) => {
 };
 exports.get = async (req, res, next) => {
   const userId = req.params.id;
+  console.log("Eu que estou funcionando")
   try {
     const est = await Est.find();
     const lowerbusca = userId.toLowerCase();
