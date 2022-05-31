@@ -271,7 +271,7 @@ exports.getEst = async (req, res, next) => {
 exports.getEstMobile = async (req, res, next) => {
   try {
     const estid = req.params.id;
-    //console.group(estid)
+    console.log(estid)
     const est = await Est.findOne({ _id: estid });
     const services = await Services.find();
     const lowerbusca = estid.toLowerCase();
@@ -302,7 +302,7 @@ exports.getEstMobile = async (req, res, next) => {
     }
     return res.status(200).send({ est: est, services: filtro, status: 200, rates: r, toprate: h, topserv: g });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).send({ error: error });
   }
 };
@@ -313,13 +313,12 @@ exports.uploadImage = async (req, res, next) => {
     const newpath = img.split(["\\"]);
     img = newpath[0] + "/" + newpath[1];
     console.log(img);
-
     const est = await Est.findOne({ _id: req.params.id });
     if (!est) {
       return res.status(404).send({ message: "est not found" });
     }
     est.images.push(img);
-    await Est.updateOne({ _id: req.params.id }, est);
+    est.save()
     return res.status(201).send(est);
   } catch (error) {
     console.log(error.message);
