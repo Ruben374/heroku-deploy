@@ -57,17 +57,23 @@ exports.getService = async (req, res, next) => {
 
 exports.UpdateService = async (req, res, next) => {
   try {
-    const service = req.body.service;
-    const id = req.params.id;
-    const serviceExists = await Services.findOne({ _id: id });
-    if (!serviceExists) {
-      return res.status(404).send({ message: "not found" });
-    }
-    await Services.updateOne({ _id: id }, service);
-    return res.status(200).send({ status: 200, service: service });
+    const { name, est, preco, hours } = req.body;
+
+    const services = new Services({
+      name,
+      est,
+      preco,
+      horarios: hours,
+    });
+
+    const response = await Services.create(services);
+    if (response)
+      return res.status(201).send({ message: "Serviço criado com sucesso." });
+
+    return res.status(500).send({ message: "Erro interno" });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).send({ error: error });
+    return res.status(500).send({ error: error.message });
   }
 };
 

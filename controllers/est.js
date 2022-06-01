@@ -128,7 +128,7 @@ exports.get = async (req, res, next) => {
 exports.openClose = async (req, res, next) => {
   try {
     const open = req.body.open;
-    console.log(open)
+    console.log(open);
     const est = await Est.findOneAndUpdate(
       { _id: req.body.id },
       { open: !open }
@@ -140,7 +140,7 @@ exports.openClose = async (req, res, next) => {
           ? "Estabelecimento fechado com sucesso"
           : "Estabelecimento aberto",
         text: !open,
-      }); 
+      });
     return res.status(500).send({ message: "Erro ao atualizar" });
   } catch (error) {
     console.log(error.message);
@@ -264,7 +264,7 @@ exports.uploadImage = async (req, res, next) => {
       );
       return res.status(200).send({ message: "Feito" });
     }
-    
+
     return res.status(404).send({ message: "Imagem não encontrada" });
     /* return res.status(404).send({ message: "Erro ao atualizar" }); */
   } catch (error) {
@@ -287,6 +287,12 @@ exports.updateEst = async (req, res, next) => {
       open_to,
       description,
     } = req.body;
+
+    let phones_number = [];
+
+    phones_number[0] = number1;
+
+    phones_number[1] = number2;
 
     //Criando uma função semelhante ao hook state do React js
     const useState = (defaultValue) => {
@@ -311,18 +317,22 @@ exports.updateEst = async (req, res, next) => {
         .send({ message: "estabelecimento não encontrado" });
     }
 
-    const qImg = est.images.length;
-    let images = [];
     const [estImages, setEstImages] = useState(est.images);
     const [newOpen, setNewOpen] = useState(est.open_to);
 
-    setNewOpen([...newOpen(), open_to]);
-    console.log(imagesCount)
+    JSON.parse(open_to).map((item) => {
+      setNewOpen([...newOpen(), item]);
+    });
+
+    const qImg = est.images.length;
     if (imagesCount > 0) {
       for (let i = 0; i < imagesCount; i++) {
-        let img = req.files[i].path;
-        const newpath = img.split(["\\"]);
-        img = newpath[0] + "/" + newpath[1];
+        let img = req.files[i]
+        if (req.files[i].path) {
+          img = req.files[i].path;
+          const newpath = img.split(["\\"]);
+          img = newpath[0] + "/" + newpath[1];
+        }
         setEstImages([...estImages(), { id: qImg + i, img: img }]);
       }
       const update = await Est.findOneAndUpdate(
@@ -332,12 +342,6 @@ exports.updateEst = async (req, res, next) => {
         }
       );
     }
-
-    let phones_number = [];
-
-    phones_number[0] = number1;
-
-    phones_number[1] = number2;
     const update = await Est.findOneAndUpdate(
       { _id: req.params.estId },
       {
@@ -346,7 +350,7 @@ exports.updateEst = async (req, res, next) => {
         number1: number1,
         number2: number2,
         nif: nif,
-        open_to: JSON.parse(newOpen()),
+        open_to: newOpen(),
         categoryid: categoryid,
         categoryname: categoryname,
         description: description,

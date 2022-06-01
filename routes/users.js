@@ -9,5 +9,6 @@ router.post("/validateToken", user.RefreshToken);
 router.post("/confirmCode/reset", user.confirmcodereset);
 router.post("/verifyEmail", user.VerifyEmail);
 router.post("/resetPassword", user.resertPassword);
+router.post("/resetUserPassword", user.resertUserPassword)
 router.get("/establishment/:id", user.get);
 module.exports = router;
