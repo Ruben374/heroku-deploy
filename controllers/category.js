@@ -24,7 +24,7 @@ exports.postCategory = async (req, res, next) => {
 }
 exports.getCategory = async (req, res, next) => {
   try {
-  
+
    const categories= await Category.find() 
       console.log(categories.length)
       return res.status(201).send(categories)

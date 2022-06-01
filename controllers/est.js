@@ -80,7 +80,7 @@ exports.est = async (req, res, next) => {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const est = await Est.find({ status: "Active" }).sort({ ratingmedia: -1 });
+    const est = await Est.find().sort({ ratingmedia: -1 });
     console.log(typeof est);
     let rates = [];
     let maior = [];
@@ -141,7 +141,7 @@ exports.get = async (req, res, next) => {
     const filtro2 = filtro.filter(
       (est) => est.status == "Active"
     );
-    return res.status(200).send(filtro2);
+    return res.status(200).send(filtro);
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error });
