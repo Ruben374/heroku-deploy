@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Est = require("../models/Est");
+const Services = require("../models/Services");
+const Appointments = require("../models/Appointments");
 const Rates = require("../models/Rates");
 
 exports.est = async (req, res) => {
@@ -251,8 +253,8 @@ exports.testAll = async (req, res) => {
 
 exports.uploadImage = async (req, res, next) => {
   try {
-    console.log(req.file);
     if (req.file) {
+      console.log(req.file);
       let img = req.file.path;
       const newpath = img.split(["\\"]);
       img = newpath[0] + "/" + newpath[1];
@@ -369,6 +371,8 @@ exports.updateEst = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     await Est.deleteOne({ _id: req.params.estId });
+    await Services.deleteOne({ "est.id": req.params.estId });
+    await Appointments.deleteOne({ "service.est.id": req.params.estId });
     return res
       .status(200)
       .send({ message: "Estabelecimento deletado com sucesso!" });
