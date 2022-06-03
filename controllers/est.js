@@ -4,39 +4,8 @@ const Est = require("../models/Est");
 const Services = require("../models/Services");
 const Appointments = require("../models/Appointments");
 const Rates = require("../models/Rates");
-<<<<<<< HEAD
-const Services = require("../models/Services");
-//Provisorio
-
-const Ratting = async (estRating, estId, rate) => {
-  const peopleRate = await Rates.find({ estId }).count();
-  console.log(peopleRate);
-  const rating = estRating + rate;
-  const ratingmedia = rating / peopleRate;
-  console.log(ratingmedia);
-  let est = await Est.findOne({ _id: estId });
-  est.rating = rating;
-  est.ratingmedia = ratingmedia;
-  est.save();
-};
-
-exports.est = async (req, res, next) => {
-  /*   var name = "Barbearia Ruben e filhos";
-  var address = "camama, depois do colegio mundo novo";
-  var nif = 5473757473;
-  var number1 = 965683433;
-  var number2 = 963939393;
-  var categoryid = "620a2a852a23e32b510ef24c";
-  var categoryname = "Barbearia";
-  var userid = "574873de9fu";
-  var username = "Ruben Mambo";
-  var description =
-    "somos um bom estabelecimento para voccê cortar o seu cabelo com calma qualidade e tranquilidade e temos preços baixos";
- */
-=======
 
 exports.est = async (req, res) => {
->>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
   try {
     const {
       name,
@@ -124,14 +93,9 @@ exports.estTopRates = async (req, res, next) => {
 exports.addOpen = async (req, res, next) => {
   try {
     const id = req.params.id;
-<<<<<<< HEAD
-    const open = {
-      dia: 2,
-=======
     const open_to = req.body.open_to;
     /* const open = {
       dia: 0,
->>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
       open: "08:30",
       close: "19:30",
     }; */
@@ -306,12 +270,7 @@ exports.ModifyRate = async (req, res, next) => {
 
 exports.getEst = async (req, res, next) => {
   try {
-<<<<<<< HEAD
-    const est = await Est.findOne({ _id: req.body.id });
-    console.log(est);
-=======
     const est = await Est.findOne({ _id: req.params.estId });
->>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
     return res.status(200).send(est);
   } catch (error) {
     console.log(error.message);
@@ -486,15 +445,9 @@ exports.updateEst = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-<<<<<<< HEAD
-    console.log(await Est.countDocuments({ _id: req.body.id }));
-    let est = await Est.deleteOne({ _id: req.body.id });
-    console.log(await Est.countDocuments({ _id: req.body.id }));
-=======
     await Est.deleteOne({ _id: req.params.estId });
     await Services.deleteOne({ "est.id": req.params.estId });
     await Appointments.deleteOne({ "service.est.id": req.params.estId });
->>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
     return res
       .status(200)
       .send({ message: "Estabelecimento deletado com sucesso!" });
