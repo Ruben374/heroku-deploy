@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 const { findOne } = require("../models/Est");
 const Est = require("../models/Est");
+const Services = require("../models/Services");
+const Appointments = require("../models/Appointments");
 const Rates = require("../models/Rates");
+<<<<<<< HEAD
 const Services = require("../models/Services");
 //Provisorio
 
@@ -30,12 +33,11 @@ exports.est = async (req, res, next) => {
   var description =
     "somos um bom estabelecimento para voccê cortar o seu cabelo com calma qualidade e tranquilidade e temos preços baixos";
  */
+=======
+
+exports.est = async (req, res) => {
+>>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
   try {
-    let phones_number = [];
-    let img = req.file.path;
-    const newpath = img.split(["\\"]);
-    img = newpath[0] + "/" + newpath[1];
-    console.log(img);
     const {
       name,
       address,
@@ -48,30 +50,42 @@ exports.est = async (req, res, next) => {
       username,
       description,
     } = req.body;
-    phones_number[0] = number1;
 
+    let phones_number = [];
+    phones_number[0] = number1;
     phones_number[1] = number2;
 
     const category = {
       _id: categoryid,
       name: categoryname,
     };
+
     const user = {
       _id: userid,
       name: username,
     };
-    const est = new Est({
-      name,
-      img: img,
-      nif: nif,
-      phones_number: phones_number,
-      description: description,
-      address: address,
-      category: category,
-      user: user,
-    });
-    const request = await Est.create(est);
-    return res.status(201).send(est).end();
+
+    let img = req.file;
+    console.log(img);
+    if (img) {
+      img = img.path;
+      const newpath = img.split(["\\"]);
+      img = newpath[0] + "/" + newpath[1];
+
+      const est = new Est({
+        name,
+        img: img,
+        nif: nif,
+        phones_number: phones_number,
+        description: description,
+        address: address,
+        category: category,
+        user: user,
+      });
+      await Est.create(est);
+      console.log(est);
+      return res.status(201).send(est).end();
+    }
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ error: error.message });
@@ -110,16 +124,22 @@ exports.estTopRates = async (req, res, next) => {
 exports.addOpen = async (req, res, next) => {
   try {
     const id = req.params.id;
+<<<<<<< HEAD
     const open = {
       dia: 2,
+=======
+    const open_to = req.body.open_to;
+    /* const open = {
+      dia: 0,
+>>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
       open: "08:30",
       close: "19:30",
-    };
+    }; */
     let est = await Est.findOne({ _id: id });
     if (!est) {
       return res.status(404).send({ message: "est not found" });
     }
-    est.open_to.push(open);
+    est.open_to.push(open_to);
     await Est.updateOne({ _id: id }, est);
     return res.status(200).send(est);
   } catch (error) {
@@ -146,11 +166,36 @@ exports.get = async (req, res, next) => {
     return res.status(500).send({ error: error });
   }
 };
+
+exports.openClose = async (req, res, next) => {
+  try {
+    const open = req.body.open;
+    console.log(open);
+    const est = await Est.findOneAndUpdate(
+      { _id: req.body.id },
+      { open: !open }
+    );
+    console.log(est, open);
+    if (est)
+      return res.status(201).send({
+        message: req.body.open
+          ? "Estabelecimento fechado com sucesso"
+          : "Estabelecimento aberto",
+        text: !open,
+      });
+    return res.status(500).send({ message: "Erro ao atualizar" });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send({ error: error });
+  }
+};
+
 exports.getEstsUser = async (req, res, next) => {
-  const userId = req.params.userId;
+  const estId = req.params.estId;
+  console.log(estId);
   try {
     const est = await Est.find();
-    const lowerbusca = userId.toLowerCase();
+    const lowerbusca = estId.toLowerCase();
     const filtro = est.filter(
       (est) => est.user._id.toLowerCase() == lowerbusca
     );
@@ -160,6 +205,7 @@ exports.getEstsUser = async (req, res, next) => {
     return res.status(500).send({ error: error });
   }
 };
+
 exports.addStar = async (req, res, next) => {
   try {
 
@@ -224,6 +270,7 @@ exports.getRate = async (req, res, next) => {
     return res.status(500).send({ error: error });
   }
 };
+
 exports.ModifyRate = async (req, res, next) => {
   try {
     const { estId, rateId, rate, com } = req.body;
@@ -259,8 +306,12 @@ exports.ModifyRate = async (req, res, next) => {
 
 exports.getEst = async (req, res, next) => {
   try {
+<<<<<<< HEAD
     const est = await Est.findOne({ _id: req.body.id });
     console.log(est);
+=======
+    const est = await Est.findOne({ _id: req.params.estId });
+>>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
     return res.status(200).send(est);
   } catch (error) {
     console.log(error.message);
@@ -307,71 +358,122 @@ exports.getEstMobile = async (req, res, next) => {
   }
 };
 
+exports.test = async (req, res, next) => {
+  console.log("Teste");
+  return res.status(500).send({ message: "Olá mundo" });
+};
+
+exports.testAll = async (req, res) => {
+  console.log("Olá mundo");
+};
+
 exports.uploadImage = async (req, res, next) => {
   try {
-    let img = req.file.path;
-    const newpath = img.split(["\\"]);
-    img = newpath[0] + "/" + newpath[1];
-    console.log(img);
-
-    const est = await Est.findOne({ _id: req.params.id });
-    if (!est) {
-      return res.status(404).send({ message: "est not found" });
+    if (req.file) {
+      console.log(req.file);
+      let img = req.file.path;
+      const newpath = img.split(["\\"]);
+      img = newpath[0] + "/" + newpath[1];
+      const alter = await Est.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          img: img,
+        }
+      );
+      return res.status(200).send({ message: "Feito" });
     }
-    est.images.push(img);
-    await Est.updateOne({ _id: req.params.id }, est);
-    return res.status(201).send(est);
+
+    return res.status(404).send({ message: "Imagem não encontrada" });
+    /* return res.status(404).send({ message: "Erro ao atualizar" }); */
   } catch (error) {
     console.log(error.message);
-    return res.status(500).send({ error: error });
+    return res.status(500).send({ "Erro: ": error });
   }
 };
 
 exports.updateEst = async (req, res, next) => {
   try {
-    console.log(req.body);
+    const {
+      name,
+      address,
+      nif,
+      number1,
+      number2,
+      imagesCount,
+      categoryid,
+      categoryname,
+      open_to,
+      description,
+    } = req.body;
+
+    let phones_number = [];
+
+    phones_number[0] = number1;
+
+    phones_number[1] = number2;
+
+    //Criando uma função semelhante ao hook state do React js
+    const useState = (defaultValue) => {
+      //Definindo uma variável com o valor do parametro
+      let value = defaultValue;
+
+      //Criei uma função para definir o valor com o parâmetro newValue
+      const getValue = () => value;
+
+      //Alteramos o valor para newValue
+      const setValue = (newValue) => (value = newValue);
+
+      //Retornando um array com o valor e a função
+      return [getValue, setValue];
+    };
+
     let est = await Est.findOne({ _id: req.params.estId });
-    console.log(est);
 
     if (!est) {
       return res
         .status(404)
         .send({ message: "estabelecimento não encontrado" });
     }
-    const phones_number = [];
-    /*  let img = req.file.path
-    const newpath = img.split(['\\'])
-    img = newpath[0] + '/' + newpath[1]
-    console.log(img) */
 
-    /////////////////////////////////////////
+    const [estImages, setEstImages] = useState(est.images);
+    const [newOpen, setNewOpen] = useState(est.open_to);
 
-    //console.log(req.body)
+    JSON.parse(open_to).map((item) => {
+      setNewOpen([...newOpen(), item]);
+    });
 
-    const {
-      name,
-      nif,
-      categoryId,
-      userId,
-      phone_number,
-      phone_number2,
-      description,
-      address,
-    } = req.body;
-    // console.log(name,nif,categoryId,userId,description)
-
-    est.name = name;
-    est.nif = nif;
-    est.phones_number[0] = phone_number;
-    if (phone_number2) {
-      est.phones_number[1] = phone_number2;
+    const qImg = est.images.length;
+    if (imagesCount > 0) {
+      for (let i = 0; i < imagesCount; i++) {
+        let img = req.files[i]
+        if (req.files[i].path) {
+          img = req.files[i].path;
+          const newpath = img.split(["\\"]);
+          img = newpath[0] + "/" + newpath[1];
+        }
+        setEstImages([...estImages(), { id: qImg + i, img: img }]);
+      }
+      const update = await Est.findOneAndUpdate(
+        { _id: req.params.estId },
+        {
+          images: estImages(),
+        }
+      );
     }
-    est.description = description;
-    est.address = address;
-    console.log(est);
-    //console.log(phones_number)
-    //const re = await Est.create(est)
-    est.save();
+    const update = await Est.findOneAndUpdate(
+      { _id: req.params.estId },
+      {
+        name: name,
+        address: address,
+        number1: number1,
+        number2: number2,
+        nif: nif,
+        open_to: newOpen(),
+        categoryid: categoryid,
+        categoryname: categoryname,
+        description: description,
+      }
+    );
 
     return res
       .status(201)
@@ -384,9 +486,15 @@ exports.updateEst = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
+<<<<<<< HEAD
     console.log(await Est.countDocuments({ _id: req.body.id }));
     let est = await Est.deleteOne({ _id: req.body.id });
     console.log(await Est.countDocuments({ _id: req.body.id }));
+=======
+    await Est.deleteOne({ _id: req.params.estId });
+    await Services.deleteOne({ "est.id": req.params.estId });
+    await Appointments.deleteOne({ "service.est.id": req.params.estId });
+>>>>>>> 9bb0ee888caecc12b17c8a06660502c3b0885f6c
     return res
       .status(200)
       .send({ message: "Estabelecimento deletado com sucesso!" });

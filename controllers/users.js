@@ -155,7 +155,7 @@ exports.confirmcodereset = async (req, res, next) => {
 exports.resertPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
-    console.log(email, newPassword)
+    console.log(email, newPassword);
     if (!email || !newPassword)
       res.status(500).send({ message: "Falta campos" });
     else {
@@ -165,7 +165,7 @@ exports.resertPassword = async (req, res) => {
         { email },
         { password: passwordHash }
       );
-      console.log(user)
+      console.log(user);
       if (user) {
         const token = jwt.sign(
           {
@@ -178,6 +178,31 @@ exports.resertPassword = async (req, res) => {
           .send({ user, token, message: "Palavra passe alterada com sucesso" });
       } else
         res.status(500).send({ message: "Falha ao atualizar a palavra passe" });
+    }
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send({ message: "Falha interna, tente novamente" });
+  }
+};
+
+exports.resertUserPassword = async (req, res) => {
+  try {
+    const { email, password, newPassword } = req.body;
+    if (!email || !newPassword)
+      res.status(500).send({ message: "Falta campos" });
+    else {
+      const userExist = Users.findOne({ email: email });
+
+      if (userExist.password === password) {
+        const salt = await bcrypt.genSalt(12);
+        const passwordHash = await bcrypt.hash(newPassword, salt);
+        await userExist.updateOne({ password: passwordHash });
+        return res
+          .status(200)
+          .send({ message: "Palavra passe altera com sucesso" });
+      } else {
+        return res.send({ message: "Palavra passe incorrecta" });
+      }
     }
   } catch (error) {
     console.log(error.message);
@@ -248,6 +273,7 @@ exports.RefreshToken = async (req, res, next) => {
 };
 exports.get = async (req, res, next) => {
   const userId = req.params.id;
+  console.log("Eu que estou funcionando");
   try {
     const est = await Est.find();
     const lowerbusca = userId.toLowerCase();
