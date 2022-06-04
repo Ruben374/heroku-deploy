@@ -17,10 +17,10 @@ module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
     .sendMail({
       from: user,
       to: email,
-      subject: `${confirmationCode} is your Agendei verification code`,
-      html: `<h1>Email Confirmation</h1>
-          <h2>Hello ${name}</h2>
-          <p>Thank you for subscribing. Please enter this verification code</p>
+      subject: `${confirmationCode} é o seu codigo de confirmação Agendei`,
+      html: `<h1>Verificação de Email</h1>
+          <h2>Olá ${name}!</h2>
+          <p>Por favor degite este condigo de confirmação</p>
          <P>${confirmationCode}</P>
           </div>`
     })

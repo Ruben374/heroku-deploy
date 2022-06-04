@@ -20,5 +20,5 @@ router.get("/delete/:estId", est.delete);
 router.get("/", est.getAll);
 router.get("/toprates", est.estTopRates);
 router.post("/addopen/:id", est.addOpen);
-
+router.get("/get/mobile/:id", est.getEstMobile);
 module.exports = router;

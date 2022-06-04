@@ -52,7 +52,7 @@ const EstSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Pending", "Active"],
-      default: "Pending",
+      default: "Active",
     }
   },
   {

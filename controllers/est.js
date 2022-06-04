@@ -63,7 +63,7 @@ exports.est = async (req, res) => {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const est = await Est.find({ status: "Active" }).sort({ ratingmedia: -1 });
+    const est = await Est.find().sort({ ratingmedia: -1 });
     console.log(typeof est);
     let rates = [];
     let maior = [];
