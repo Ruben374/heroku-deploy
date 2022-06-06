@@ -273,16 +273,19 @@ exports.getEst = async (req, res, next) => {
 };
 exports.getEstMobile = async (req, res, next) => {
   try {
-    const estid = req.params.id;
-    //console.group(estid)
+    const estid =req.params.id;
+    console.log(estid)
     const est = await Est.findOne({ _id: estid });
+    console.log(est)
     const services = await Services.find();
     const lowerbusca = estid.toLowerCase();
     const filtro = services.filter(
       (serv) => serv.est.id.toLowerCase() == lowerbusca
     );
+    console.log("passou 1")
     const rates = await Rates.find();
     const r = rates.filter((ra) => ra.est.id.toLowerCase() == lowerbusca);
+    console.log("passou 2")
     const h = [];
     const g = [];
     if (r.length > 0) {
