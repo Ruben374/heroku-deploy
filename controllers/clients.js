@@ -361,6 +361,7 @@ exports.addFavorite = async (req, res, next) => {
     return res.status(500).send({ status: 500, error: error });
   }
 };
+ 
 exports.removeFavorite = async (req, res, next) => {
   try {
     const email = req.body.email
