@@ -7,7 +7,7 @@ const multer = require("../multer.js");
 router.post("/post", multer.single("file"), est.est);
 router.post("/uploadimage/:id", multer.single("file"), est.uploadImage);
 router.get("/:categoryId", est.get);
-router.get("/estsuser/:estId", est.getEstsUser);
+router.get("/estsuser/:userId", est.getEstsUser);
 router.post("/rating", est.addStar);
 router.post("/getrate", est.getRate);
 router.patch("/uploadrate", est.ModifyRate);

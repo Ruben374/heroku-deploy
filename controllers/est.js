@@ -36,7 +36,6 @@ exports.est = async (req, res) => {
     };
 
     let img = req.file;
-    console.log(img);
     if (img) {
       img = img.path;
       const newpath = img.split(["\\"]);
@@ -53,7 +52,6 @@ exports.est = async (req, res) => {
         user: user,
       });
       await Est.create(est);
-      console.log(est);
       return res.status(201).send(est).end();
     }
   } catch (error) {
@@ -151,14 +149,13 @@ exports.openClose = async (req, res, next) => {
     console.log(error.message);
     return res.status(500).send({ error: error });
   }
-};
+}; 
 
 exports.getEstsUser = async (req, res, next) => {
-  const estId = req.params.estId;
-  console.log(estId);
+  const userId = req.params.userId;
   try {
     const est = await Est.find();
-    const lowerbusca = estId.toLowerCase();
+    const lowerbusca = userId.toLowerCase();
     const filtro = est.filter(
       (est) => est.user._id.toLowerCase() == lowerbusca
     );
@@ -330,7 +327,6 @@ exports.testAll = async (req, res) => {
 exports.uploadImage = async (req, res, next) => {
   try {
     if (req.file) {
-      console.log(req.file);
       let img = req.file.path;
       const newpath = img.split(["\\"]);
       img = newpath[0] + "/" + newpath[1];
