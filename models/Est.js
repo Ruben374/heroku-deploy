@@ -47,7 +47,7 @@ const EstSchema = new mongoose.Schema(
     },
     open:{
       type:Boolean,
-      default:false
+      default:true
     },
     status: {
       type: String,
