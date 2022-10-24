@@ -26,7 +26,7 @@ exports.getCategory = async (req, res, next) => {
   try {
   
    const categories= await Category.find() 
-      console.log(categories.length)
+      console.log(categories)
       return res.status(201).send(categories)
   } catch (error) {
       console.log(error.message)
